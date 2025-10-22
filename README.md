@@ -158,11 +158,11 @@ flowchart TD
     B -- Prediction Info --> I
 ```
 
-Step 1: The Prediction Model ("What Can We Guess?")
+## Step 1: The Prediction Model ("What Can We Guess?")
 
 This is the most important step. Instead of encoding the raw pixels, the encoder first tries to predict them. The difference between this prediction and the actual image is what gets encoded. There are two main types of prediction:
 
-A) Intra-Frame Prediction (Spatial Prediction - for I-frames):
+#### A) Intra-Frame Prediction (Spatial Prediction - for I-frames):
 
 Concept: For the current block, look at its already-encoded neighboring blocks within the same frame and predict what it should look like.
 
@@ -170,7 +170,7 @@ Analogy: You're doing a paint-by-numbers. You see the surrounding cells are all 
 
 How: H.264 has several "directions" (modes) like "copy from the left," "copy from above," or a "diagonal average." The encoder picks the best one.
 
-B) Inter-Frame Prediction (Temporal Prediction - for P/B-frames):
+#### B) Inter-Frame Prediction (Temporal Prediction - for P/B-frames):
 
 Concept: For the current block, search for a similar block in a previously encoded frame (a "reference frame"). Instead of encoding the block's pixels, you just encode a motion vector.
 
@@ -180,11 +180,11 @@ How: This is Motion Estimation. The motion vector is just a (x, y) coordinate te
 
 The output of this stage is the Residual (the difference between the prediction and the real image) and the Prediction Info (motion vectors or intra-mode directions).
 
-Step 2: The Spatial Model ("Compressing the Leftovers")
+## Step 2: The Spatial Model ("Compressing the Leftovers")
 
 The Residual image is the part of the image the predictor couldn't guess. It's the detail, noise, and edges. It's usually made of small numbers and doesn't have sharp, predictable patterns, so we can't predict it easily. Instead, we compress it using frequency analysis.
 
-A) Transform (DCT - Discrete Cosine Transform):
+#### A) Transform (DCT - Discrete Cosine Transform):
 
 Concept: It takes a block of the residual (e.g., 4x4 or 8x8 pixels) and converts it from the spatial domain (pixel values) into the frequency domain.
 
@@ -192,7 +192,7 @@ Analogy: Imagine a complex musical chord. The DCT is like breaking that chord do
 
 Why? In the frequency domain, the "energy" of the residual is concentrated into just a few important coefficients (the low frequencies). The many high-frequency coefficients are often close to zero.
 
-B) Quantization (Q):
+#### B) Quantization (Q):
 
 Concept: This is the primary step where information is lost and compression happens. It deliberately reduces the precision of the frequency coefficients from the DCT.
 
@@ -202,7 +202,7 @@ Analogy: You have the measurements 4.1, 3.9, and 4.2. You decide to "quantize" t
 
 Result: After quantization, most of the high-frequency coefficients become 0. This creates long runs of zeros, which are very easy to compress in the next stage.
 
-Step 3: The Entropy Encoder ("Final Squeeze")
+## Step 3: The Entropy Encoder ("Final Squeeze")
 
 This is the final, lossless compression stage. It takes all the data that remains and encodes it into the most efficient binary representation possible.
 
